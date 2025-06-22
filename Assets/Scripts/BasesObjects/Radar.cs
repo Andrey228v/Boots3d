@@ -1,6 +1,5 @@
 using Assets.Scripts.Resurses;
 using DG.Tweening;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,30 +12,26 @@ public class Radar : MonoBehaviour
     [SerializeField] private Vector3 _radiusScan;
     [SerializeField] private float _radius = 50f;
     [SerializeField] private LayerMask _foundType;
+    [SerializeField] private float _durationScan = 2f;
 
     private bool _isScaning = true;
+    private HashSet<Resurs> _resursesFounded;
     private HashSet<Resurs> _foundResurses;
     private WaitForSeconds _sleepTime;
     private Collider[] _hitColliders;
-    private bool _isFoundedResursEmpty = true;
-    //private string _prevAction = "FindEvent";
-
-    public event Action Founded;
-    public event Action NotFounded;
-    public event Action<HashSet<Resurs>> FoundedResurs;
 
     private void Start()
     {
+        _resursesFounded = new HashSet<Resurs>();
         _foundResurses = new HashSet<Resurs>();
         _sleepTime = new WaitForSeconds(_periodScan);
-        //_foundType = ~_foundType;
     }
 
     public IEnumerator StartScan()
     {
         while (_isScaning)
         {
-            _radarAria.DOScale(_radiusScan, 2f)
+            _radarAria.DOScale(_radiusScan, _durationScan)
                 .OnComplete(() => ScanComplite());
 
             yield return _sleepTime;
@@ -52,22 +47,25 @@ public class Radar : MonoBehaviour
         {
             if (collider.TryGetComponent<Resurs>(out Resurs resurs))
             {
-                if(resurs.IsCanTake == true)
+                if (resurs.IsCanTake == true )
                 {
-                    _foundResurses.Add(resurs);
-                }
-                else
-                {
-                    _foundResurses.Remove(resurs); // нужно ли это....
+
+                    if (_resursesFounded.Contains(resurs) == false)
+                    {
+                        _foundResurses.Add(resurs);
+                    }
+
+                    _resursesFounded.Add(resurs);
                 }
             }
         }
+    }
 
-        _isFoundedResursEmpty = _foundResurses.Count == 0;
-
-        if (_isFoundedResursEmpty == false)
+    public void DeliverFoundResurs(Resurs resurs)
+    {
+        if (_resursesFounded.Contains(resurs))
         {
-            FoundedResurs?.Invoke(_foundResurses);
+            _resursesFounded.Remove(resurs);
         }
     }
 
@@ -78,27 +76,22 @@ public class Radar : MonoBehaviour
 
         var sortResurs = _foundResurses.OrderBy(n => Vector3.Distance(n.transform.position, transform.position));
 
-        resurs = null;
-
         foreach (var res in sortResurs)
         {
             if (res.IsCanTake == true)
             {
                 resurs = res;
-                _foundResurses.Remove(res); // ???? Скорее всего из-за этого ошибка может быть... 
+                isFound = true;
+                _foundResurses.Remove(res);
                 break;
             }
         }
 
-        if (resurs != null)
-        {
-            isFound = true;
-        }
-        else
-        {
-            
-        }
-
         return isFound;
+    }
+
+    public bool IsFreeResursesHave()
+    {
+        return _foundResurses.Count > 0;
     }
 }

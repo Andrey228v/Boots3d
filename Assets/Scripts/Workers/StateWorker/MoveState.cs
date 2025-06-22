@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts.Workers.StateWorker
 {
@@ -9,8 +8,6 @@ namespace Assets.Scripts.Workers.StateWorker
         private Animator _animator;
         private WorkerView _view;
         private float _speed;
-
-        public event Action<Worker> ChangedState;
 
         public MoveState(Animator animator, WorkerView view, float speed)
         {

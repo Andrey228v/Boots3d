@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Assets.Scripts.Workers.StateWorker
 {
@@ -7,8 +6,6 @@ namespace Assets.Scripts.Workers.StateWorker
     {
         private float _speed = 0f;
         private Animator _animator;
-
-        public event Action<Worker> ChangedState;
 
         public StayState(float speed, Animator animator)
         {

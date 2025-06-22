@@ -49,6 +49,7 @@ MonoBehaviour:
   _pointForTake: {fileID: 66465551821560076}
   _bodyResurs: {fileID: 8339673896643693126}
   _renderer: {fileID: 4342102457263967562}
+  _collider: {fileID: 4955251645047766714}
 --- !u!65 &4955251645047766714
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -64,7 +65,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3

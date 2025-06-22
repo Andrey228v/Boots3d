@@ -18,20 +18,16 @@ namespace Assets.Scripts.BasesObjects
         private void Awake()
         {
             _queuePosition = new List<BaseSlotWorker>();
-        }
 
-        private void Start()
-        {
-            for (int i = 0; i < _columnCount; i++) 
+            for (int i = 0; i < _columnCount; i++)
             {
-                for (int j = 0; j < _rowCount; j++) 
+                for (int j = 0; j < _rowCount; j++)
                 {
                     Vector3 newPosition = _startPosition + new Vector3(_distanceBeetweenPosition.x * i, _distanceBeetweenPosition.y, _distanceBeetweenPosition.z * j * -1);
 
                     Transform prefab = Instantiate(_prefab);
                     prefab.SetParent(_parent);
                     prefab.localPosition = newPosition;
-
                     _queuePosition.Add(new BaseSlotWorker(prefab.position, true));
                 }
             }

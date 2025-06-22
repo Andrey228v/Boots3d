@@ -1,6 +1,5 @@
 ﻿using Assets.Scripts.Spawners;
 using System;
-using System.Drawing;
 using UnityEngine;
 
 namespace Assets.Scripts.Resurses
@@ -10,17 +9,24 @@ namespace Assets.Scripts.Resurses
         [SerializeField] private Transform _pointForTake;
         [SerializeField] private Transform _bodyResurs;
         [SerializeField] private MeshRenderer _renderer;
+        [SerializeField] private Collider _collider;
+
+        public event Action OnResursTaked;
+        public event Action<Resurs> DestroedSpawnObject;
 
         public bool IsCanTake { get; private set; }
         public Renderer Renderer { get; private set; }
         public Material Material { get; private set; }
 
-        public event Action<Resurs> DestroedSpawnObject;
-
         private void Awake()
         {
             Renderer = _bodyResurs.GetComponent<Renderer>();
             Material = Renderer.material;
+            IsCanTake = true;
+        }
+
+        private void OnEnable()
+        {
             IsCanTake = true;
         }
 
@@ -32,7 +38,9 @@ namespace Assets.Scripts.Resurses
         public Transform Take()
         {
             IsCanTake = false;
-            //_uiResurs.SetText(IsCanTake.ToString());
+            OnResursTaked?.Invoke();
+            _collider.enabled = false;
+
             return _pointForTake;
         }
 

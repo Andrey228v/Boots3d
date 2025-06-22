@@ -13,7 +13,6 @@ namespace Assets.Scripts.Spawners
         private ISpawnPosition _spawnPosition;
         private WaitForSeconds _sleepTime;
         private bool _isSpawn = true;
-        private float _heightResurs = 0.2f;
 
         protected new void Awake()
         {
@@ -23,7 +22,7 @@ namespace Assets.Scripts.Spawners
 
         }
 
-        private void Start()
+        private void OnEnable()
         {
             StartCoroutine(StartSpawn());
         }

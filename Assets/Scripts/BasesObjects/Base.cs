@@ -14,40 +14,54 @@ public class Base : MonoBehaviour
     [SerializeField] private Color _baseColor;
     [SerializeField] private BaseQueuePosition _baseQueuePosition;
     [SerializeField] private Store _store;
-    //Должен быть ещ ё склад...
-
     [SerializeField] private int _countWorkers;
-    [SerializeField] private int _resursesInBase;
 
     private List<Worker> _workersList;
     private CommandCenter _commandCenter;
+    private Color _colorWorker;
+    private float _minRangeColor = 0f;
+    private float _maxRangeColor = 1f;
  
-
     private void Awake()
     {
         _workersList = new List<Worker>();
-    }
 
-    private void Start()
-    {
+        _colorWorker.r = Random.Range(_minRangeColor, _maxRangeColor);
+        _colorWorker.g = Random.Range(_minRangeColor, _maxRangeColor);
+        _colorWorker.b = Random.Range(_minRangeColor, _maxRangeColor);
+
         for (int i = 0; i < _countWorkers; i++)
         {
-            CreateWorker();
+            Worker worker = CreateWorker();
+            _workersList.Add(worker);
+            worker.View.SetColor(_colorWorker);
+            worker.OnUploadObject += _radar.DeliverFoundResurs;
         }
 
         _commandCenter = new CommandCenter(_workersList, _baseQueuePosition.GetPosition());
 
         _baseUI.SetCountWorker(_countWorkers);
-        _baseUI.SetCountResurses(_resursesInBase);
 
+        _store.OnAppend += _baseUI.SetCountResurses;
+    }
+
+    private void Start()
+    {
         UseRadar();
     }
 
+    private void OnDestroy()
+    {
+        for (int i = 0; i < _workersList.Count; i++)
+        {
+            _workersList[i].OnUploadObject -= _radar.DeliverFoundResurs;
+        }
+        _commandCenter.Dispose();
+    }
 
     private Worker CreateWorker()
     {
         Worker worker = _baseRespawn.Spawn();
-        _workersList.Add(worker);
         worker.SetBase(this);
         worker.SetStore(_store);
 
@@ -64,16 +78,17 @@ public class Base : MonoBehaviour
     {
         while (true)
         {
+            yield return new WaitUntil(_commandCenter.IsFreeWorkerHave);
+            yield return new WaitUntil(_radar.IsFreeResursesHave);
+
             if (_radar.TryGetFoundResurs(out Resurs resurs))
             {
-                Debug.Log("DRAW");
-                Debug.DrawRay(transform.position, resurs.transform.position - transform.position, Color.yellow, 1f);
+                Debug.DrawRay(transform.position, resurs.transform.position - transform.position, Color.yellow, 3f);
 
                 _commandCenter.SetCommandTakeResurs(resurs);
             }
 
-            yield return new WaitUntil(_commandCenter.IsFreeWorkerHave);
+            yield return null;
         }
     }
-
 }

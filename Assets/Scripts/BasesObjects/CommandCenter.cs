@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 
-
 namespace Assets.Scripts.BasesObjects
 {
     public class CommandCenter : IDisposable
@@ -10,7 +9,6 @@ namespace Assets.Scripts.BasesObjects
         private List<Worker> _allWorker;
         private List<Worker> _freeWorker;
         private List<BaseSlotWorker> _positionsBase;
-        private HashSet<Resurs> _arrivedResursPosition;
 
         public CommandCenter(List<Worker> workers, List<BaseSlotWorker> positions)
         {
@@ -43,18 +41,10 @@ namespace Assets.Scripts.BasesObjects
             }
         }
 
-        public bool SetCommandTakeResurs(Resurs resurs)
+        public void SetCommandTakeResurs(Resurs resurs)
         {
-            bool isCommandExecute = false;
-
-            if (TryGetFreeWorker(out Worker worker)) 
-            {
-                worker.SetCoomandGetResurs(resurs);
-                isCommandExecute = true;
-            }
-
-
-            return isCommandExecute;
+            Worker worker = TryGetFreeWorker();
+            worker.SetCoomandGetResurs(resurs);
         }
 
         public bool IsFreeWorkerHave()
@@ -62,29 +52,24 @@ namespace Assets.Scripts.BasesObjects
             return _freeWorker.Count > 0;
         }
 
-        private bool TryGetFreeWorker(out Worker worker)
+        public int GetFreeWorkersCount()
         {
-            bool isFind = false;
-            worker = null;
+            return _freeWorker.Count;
+        }
 
-            if (_freeWorker.Count > 0)
-            {
-                worker = _freeWorker[0];
-                isFind = true;
-                _freeWorker.RemoveAt(0);
-            }
+        private Worker TryGetFreeWorker()
+        {
+            Worker worker = _freeWorker[0];
+            _freeWorker.RemoveAt(0);
+            worker.SetIsFree(false);
 
-            return isFind;
+            return worker;
         }
 
         public void AddFreeWorker(Worker worker)
         {
+            worker.SetIsFree(true);
             _freeWorker.Add(worker);
-
-            if(TryGetFreeBasePosition(out BaseSlotWorker slot))
-            {
-                worker.transform.position = slot.Position;
-            }
         }
 
         private bool TryGetFreeBasePosition(out BaseSlotWorker slot)
@@ -104,7 +89,5 @@ namespace Assets.Scripts.BasesObjects
 
             return isFind;
         }
-
-        
     }
 }

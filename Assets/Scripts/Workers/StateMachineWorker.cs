@@ -29,11 +29,6 @@ namespace Assets.Scripts.Workers
             _stayState = new StayState(_speedStayState, _animator);
             _moveState = new MoveState(_animator, _view, _speedStayMove);
 
-            
-        }
-
-        private void Start()
-        {
             CurrentState = _stayState;
             SelectState(WorkerStateType.Wait);
         }

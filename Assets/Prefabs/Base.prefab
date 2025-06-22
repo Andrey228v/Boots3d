@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1229597327888432117}
   - component: {fileID: 6648821577066124525}
   - component: {fileID: 2900540776688538775}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: RespawnPlane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -161,7 +161,7 @@ GameObject:
   - component: {fileID: 2416405298518611330}
   - component: {fileID: 4843172081611414479}
   - component: {fileID: 5963677067408601037}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -241,7 +241,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6063055346153507616}
   - component: {fileID: 6406438748658344645}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Store
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -291,7 +291,7 @@ GameObject:
   - component: {fileID: 6123181683860258566}
   - component: {fileID: 1271522293620570827}
   - component: {fileID: 1159185874944331618}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: ScanSphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -397,7 +397,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7394827389988808384}
   - component: {fileID: 4067570474161013102}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: QueuePositionParent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -448,7 +448,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1104523868972063142}
   - component: {fileID: 4700259049962895346}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: UI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -494,7 +494,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6066483499006142785}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: StorePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -525,7 +525,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8047754469457466494}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Workers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -559,7 +559,7 @@ GameObject:
   - component: {fileID: 3056524975680382385}
   - component: {fileID: 3904673084131288242}
   - component: {fileID: 1338049437180915537}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: StoreBody
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -666,7 +666,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2245271289319511475}
   - component: {fileID: 560739493695767782}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Radar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -716,6 +716,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1104523868972063142}
     m_Modifications:
+    - target: {fileID: 202999728745294189, guid: 4d9611a410aea27488b589b268e1ab8b, type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1019929594099111259, guid: 4d9611a410aea27488b589b268e1ab8b, type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2114020412233089780, guid: 4d9611a410aea27488b589b268e1ab8b, type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2723186624935577931, guid: 4d9611a410aea27488b589b268e1ab8b, type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 4442487052951263884, guid: 4d9611a410aea27488b589b268e1ab8b, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -799,6 +815,22 @@ PrefabInstance:
     - target: {fileID: 5022416801308435209, guid: 4d9611a410aea27488b589b268e1ab8b, type: 3}
       propertyPath: m_Name
       value: BaseInfo
+      objectReference: {fileID: 0}
+    - target: {fileID: 5022416801308435209, guid: 4d9611a410aea27488b589b268e1ab8b, type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5203325976605616209, guid: 4d9611a410aea27488b589b268e1ab8b, type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6284262880348636067, guid: 4d9611a410aea27488b589b268e1ab8b, type: 3}
+      propertyPath: m_Layer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7527678937385263501, guid: 4d9611a410aea27488b589b268e1ab8b, type: 3}
+      propertyPath: m_Layer
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

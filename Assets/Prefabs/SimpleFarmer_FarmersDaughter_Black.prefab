@@ -1142,7 +1142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speedStayState: 0
-  _speedStayMove: 5
+  _speedStayMove: 12
 --- !u!114 &7888496411170474646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1156,6 +1156,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _handPoint: {fileID: 7209303429063194472}
+  _renderer: {fileID: 13700008}
 --- !u!114 &7272050523756493074
 MonoBehaviour:
   m_ObjectHideFlags: 0

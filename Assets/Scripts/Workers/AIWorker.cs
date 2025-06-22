@@ -6,43 +6,56 @@ namespace Assets.Scripts.Workers
 {
     public class AIWorker : MonoBehaviour
     {
-        //private float _distanseTakeObject;
-
         private Worker _worker;
-        private bool _isTracking;
-
+        
+        public bool IsTracking { get; private set; }
+        public bool IsOnBase { get; private set; }
         public StateMachineWorker MachineWorker { get; private set; }
 
+        private void OnTriggerEnter(Collider other)
+        {
+            if(other.gameObject == _worker.BaseOwn.gameObject)
+            {
+                IsOnBase = true;
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (other.gameObject == _worker.BaseOwn.gameObject)
+            {
+                IsOnBase = false;
+            }
+        }
 
         private void Awake()
         {
             _worker = GetComponent<Worker>();
             MachineWorker = GetComponent<StateMachineWorker>();
+            IsOnBase = false;
         }
 
         public void Tracking(Resurs resursTaking, WorkerView view, float distanseTakeObject, LayerMask ignoreLayerUnit)
         {
-            _isTracking = true;
+            IsTracking = true;
             StartCoroutine(StartTracking(resursTaking, view, distanseTakeObject, ignoreLayerUnit));
         }
 
         private IEnumerator StartTracking(Resurs resurs, WorkerView view, float distanseTakeObject, LayerMask ignoreLayerUnit)
         {
-
-            while (_isTracking)
+            while (IsTracking)
             {
-               
                 if (resurs.IsCanTake == true)
                 {
-                    Debug.DrawRay(view.transform.position, view.transform.forward, Color.yellow, 0.01f);
+                    Debug.DrawRay(view.transform.position, view.transform.forward, Color.green, 0.01f);
 
-                    if (Physics.Raycast(view.transform.position, view.transform.forward, out RaycastHit hit, distanseTakeObject, ignoreLayerUnit))
+                    RaycastHit[] hits =  Physics.RaycastAll(view.transform.position, view.transform.forward, distanseTakeObject, ignoreLayerUnit);
+
+                    foreach(RaycastHit hit in hits)
                     {
-
                         if (hit.collider.gameObject == resurs.gameObject)
                         {
                             view.TakeObject(resurs);
-                            MachineWorker.SelectState(StateWorker.WorkerStateType.Wait);
                             view.SetPoint(_worker.BaseOwn.transform);
                             MachineWorker.SelectState(StateWorker.WorkerStateType.Run);
                         }
@@ -50,17 +63,13 @@ namespace Assets.Scripts.Workers
                 }
                 else
                 {
-                    Debug.Log("BACK TO BASE");
-                    _isTracking = false;
+                    IsTracking = false;
                     view.SetPoint(_worker.BaseOwn.transform);
                     MachineWorker.SelectState(StateWorker.WorkerStateType.Run);
-                    //CommandMoveToBase commandMoveToBase = new CommandMoveToBase(view, RadarResurs, MachineUnit);
-                    //commandMoveToBase.Execute();
                 }
 
                 yield return null;
             }
         }
-
     }
 }
