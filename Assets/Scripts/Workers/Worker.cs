@@ -19,11 +19,12 @@ public class Worker : MonoBehaviour, ISpawnObject<Worker>
     public event Action<Worker> DestroedSpawnObject;
     public event Action DeliveredResurs;
     public event Action<Worker> RealisedWorker;
-    public event Action<Resurs> OnUploadObject;
+    public event Action<Resource> OnUploadObject;
 
     public Base BaseOwn { get; private set; }
     public bool IsFree { get; private set; }
     public WorkerView View { get; private set; }
+    public Resource TargetResurs { get; private set; }
 
     private void Awake()
     {
@@ -52,11 +53,26 @@ public class Worker : MonoBehaviour, ISpawnObject<Worker>
         }
     }
 
-    public void SetCoomandGetResurs(Resurs resurs)
+    public void Init(Base baseOwn, Store store, bool isFree)
+    {
+        BaseOwn = baseOwn;
+        _store = store;
+        IsFree = isFree;
+    }
+
+    public void GetResurs(Resource resurs)
     {
         View.SetPoint(resurs.transform);
         _stateMachinWorker.SelectState(WorkerStateType.Run);
         _aiWorker.Tracking(resurs, View, _distanseTakeObject, _ignoreLayerUnit);
+        TargetResurs = resurs;
+    }
+
+    public void BackToBase()
+    {
+        View.SetPoint(BaseOwn.transform);
+        _aiWorker.SetIsTracking(false);
+        _stateMachinWorker.SelectState(WorkerStateType.Run);
     }
 
     public void SetBase(Base baseOwn)

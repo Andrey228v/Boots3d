@@ -2,7 +2,7 @@
 
 namespace Assets.Scripts.Spawners.ObjectsPools
 {
-    public class ResursesPool: ObjectPoolPrefab<Resurs>
+    public class ResursesPool: ObjectPoolPrefab<Resource>
     {
     }
 }

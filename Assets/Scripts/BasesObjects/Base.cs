@@ -1,13 +1,15 @@
+using Assets.Scripts;
 using Assets.Scripts.BasesObjects;
 using Assets.Scripts.Resurses;
 using Assets.Scripts.Spawners;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Base : MonoBehaviour
 {
-    [SerializeField] private Transform _workers;
+    [SerializeField] private Transform _workerPrefab;
     [SerializeField] private SpawnerWorker _baseRespawn;
     [SerializeField] private Radar _radar;
     [SerializeField] private BaseUI _baseUI;
@@ -15,34 +17,35 @@ public class Base : MonoBehaviour
     [SerializeField] private BaseQueuePosition _baseQueuePosition;
     [SerializeField] private Store _store;
     [SerializeField] private int _countWorkers;
+    [SerializeField] private RadarAria _radarAria;
+    [SerializeField] private MapStoreResurs _mapStoreResurs;
 
     private List<Worker> _workersList;
-    private CommandCenter _commandCenter;
+    public CommandCenter CommandCenter { get; private set; }
+
     private Color _colorWorker;
-    private float _minRangeColor = 0f;
-    private float _maxRangeColor = 1f;
- 
+
+    public event Action<Base, Resource> OnNotify;
+
     private void Awake()
     {
         _workersList = new List<Worker>();
-
-        _colorWorker.r = Random.Range(_minRangeColor, _maxRangeColor);
-        _colorWorker.g = Random.Range(_minRangeColor, _maxRangeColor);
-        _colorWorker.b = Random.Range(_minRangeColor, _maxRangeColor);
+        _colorWorker = UnityEngine.Random.ColorHSV();
 
         for (int i = 0; i < _countWorkers; i++)
         {
             Worker worker = CreateWorker();
             _workersList.Add(worker);
             worker.View.SetColor(_colorWorker);
-            worker.OnUploadObject += _radar.DeliverFoundResurs;
         }
 
-        _commandCenter = new CommandCenter(_workersList, _baseQueuePosition.GetPosition());
+        CommandCenter = new CommandCenter(_workersList, _baseQueuePosition.GetPosition(), _mapStoreResurs);
 
         _baseUI.SetCountWorker(_countWorkers);
 
         _store.OnAppend += _baseUI.SetCountResurses;
+        _radar.AriaDrawed += _radarAria.ScanAria;
+        _radarAria.OnFounded += NotifyResursFound;
     }
 
     private void Start()
@@ -52,18 +55,17 @@ public class Base : MonoBehaviour
 
     private void OnDestroy()
     {
-        for (int i = 0; i < _workersList.Count; i++)
-        {
-            _workersList[i].OnUploadObject -= _radar.DeliverFoundResurs;
-        }
-        _commandCenter.Dispose();
+        CommandCenter.Dispose();
+
+        _store.OnAppend -= _baseUI.SetCountResurses;
+        _radar.AriaDrawed -= _radarAria.ScanAria;
+        _radarAria.OnFounded -= NotifyResursFound;
     }
 
     private Worker CreateWorker()
     {
         Worker worker = _baseRespawn.Spawn();
-        worker.SetBase(this);
-        worker.SetStore(_store);
+        worker.Init(this, _store, true);
 
         return worker;
     }
@@ -76,19 +78,22 @@ public class Base : MonoBehaviour
 
     private IEnumerator RequestTakeResursPosition()
     {
-        while (true)
+        while (enabled)
         {
-            yield return new WaitUntil(_commandCenter.IsFreeWorkerHave);
-            yield return new WaitUntil(_radar.IsFreeResursesHave);
+            yield return new WaitUntil(CommandCenter.IsFreeWorkerHave);
 
-            if (_radar.TryGetFoundResurs(out Resurs resurs))
+            if (_mapStoreResurs.TryGetFreeResurs(this, out Resource resurs))
             {
                 Debug.DrawRay(transform.position, resurs.transform.position - transform.position, Color.yellow, 3f);
-
-                _commandCenter.SetCommandTakeResurs(resurs);
+                CommandCenter.SetCommandTakeResurs(resurs);
             }
 
             yield return null;
         }
+    }
+
+    public void NotifyResursFound(Resource resurs)
+    {
+        OnNotify?.Invoke(this, resurs);
     }
 }

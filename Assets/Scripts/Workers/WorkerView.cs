@@ -9,23 +9,23 @@ namespace Assets.Scripts.Workers
         [SerializeField] private Transform _handPoint;
         [SerializeField] private Renderer _renderer;
 
-        public event Action<string> ResursTaked;
-        public event Action<Resurs> OnUploadObject;
+        private Transform _point;
+
+        public event Action<Resource> OnTakeResurs;
+        public event Action<Resource> OnUploadObject;
         public event Action OnBase;
 
-        private Transform _point;
-        public Resurs ObjectTake { get; private set; }
-
+        public Resource ObjectTake { get; private set; }
         public bool IsResursTake { get; private set; }
 
-        public void TakeObject(Resurs objectTake)
+        public void TakeObject(Resource objectTake)
         {
             ObjectTake = objectTake;
             objectTake.Take();
             objectTake.transform.SetParent(_handPoint);
             objectTake.transform.position = _handPoint.position;
             IsResursTake = true;
-            ResursTaked?.Invoke(IsResursTake.ToString());
+            OnTakeResurs?.Invoke(objectTake);
         }
 
         public void UploadObject()
@@ -34,7 +34,6 @@ namespace Assets.Scripts.Workers
             OnBase?.Invoke();
             ObjectTake = null;
             IsResursTake = false;
-            ResursTaked?.Invoke(IsResursTake.ToString());
         }
 
         public void SetPoint(Transform point)
