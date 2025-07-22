@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Assets.Scripts.Spawners
 {
     [RequireComponent(typeof(ISpawnPosition))]
-    public class SpawnerResurs: Spawner<Resurs>
+    public class SpawnerResurs: Spawner<Resource>
     {
         [SerializeField] private float _timeSpawn = 1f;
 
@@ -27,9 +27,9 @@ namespace Assets.Scripts.Spawners
             StartCoroutine(StartSpawn());
         }
 
-        public Resurs Spawn()
+        public Resource Spawn()
         {
-            Resurs resurs = GetSpawnObject();
+            Resource resurs = GetSpawnObject();
             resurs.transform.position = _spawnPosition.GetSpawnPosition();
 
             return resurs;

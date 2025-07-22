@@ -13,7 +13,7 @@ namespace Assets.Scripts.BasesObjects
 
         public event Action<int> OnAppend;
 
-        public void Append(Resurs resurs)
+        public void Append(Resource resurs)
         {
             resurs.transform.SetParent(_storePosition);
             resurs.transform.position = _storePoint.position;

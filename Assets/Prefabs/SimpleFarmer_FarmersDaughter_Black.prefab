@@ -1142,7 +1142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speedStayState: 0
-  _speedStayMove: 12
+  _speedStayMove: 5
 --- !u!114 &7888496411170474646
 MonoBehaviour:
   m_ObjectHideFlags: 0

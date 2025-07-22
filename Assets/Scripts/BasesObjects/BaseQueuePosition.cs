@@ -25,8 +25,7 @@ namespace Assets.Scripts.BasesObjects
                 {
                     Vector3 newPosition = _startPosition + new Vector3(_distanceBeetweenPosition.x * i, _distanceBeetweenPosition.y, _distanceBeetweenPosition.z * j * -1);
 
-                    Transform prefab = Instantiate(_prefab);
-                    prefab.SetParent(_parent);
+                    Transform prefab = Instantiate(_prefab, _parent);
                     prefab.localPosition = newPosition;
                     _queuePosition.Add(new BaseSlotWorker(prefab.position, true));
                 }
