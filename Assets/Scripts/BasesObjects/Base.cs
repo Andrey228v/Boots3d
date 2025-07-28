@@ -17,15 +17,13 @@ public class Base : MonoBehaviour
     [SerializeField] private BaseQueuePosition _baseQueuePosition;
     [SerializeField] private Store _store;
     [SerializeField] private int _countWorkers;
-    [SerializeField] private RadarAria _radarAria;
     [SerializeField] private MapStoreResurs _mapStoreResurs;
+    [SerializeField] private BaseTriggerOnWorker _triggerOnWorker;
 
     private List<Worker> _workersList;
-    public CommandCenter CommandCenter { get; private set; }
-
     private Color _colorWorker;
 
-    public event Action<Base, Resource> OnNotify;
+    public CommandCenter CommandCenter { get; private set; }
 
     private void Awake()
     {
@@ -44,8 +42,9 @@ public class Base : MonoBehaviour
         _baseUI.SetCountWorker(_countWorkers);
 
         _store.OnAppend += _baseUI.SetCountResurses;
-        _radar.AriaDrawed += _radarAria.ScanAria;
-        _radarAria.OnFounded += NotifyResursFound;
+        _radar.OnFounded += NotifyResursFound;
+        _triggerOnWorker.OnWorkerBackToBase += CommandCenter.SetCommandUploadResurs;
+
     }
 
     private void Start()
@@ -55,11 +54,9 @@ public class Base : MonoBehaviour
 
     private void OnDestroy()
     {
-        CommandCenter.Dispose();
-
         _store.OnAppend -= _baseUI.SetCountResurses;
-        _radar.AriaDrawed -= _radarAria.ScanAria;
-        _radarAria.OnFounded -= NotifyResursFound;
+        _radar.OnFounded -= NotifyResursFound;
+        _triggerOnWorker.OnWorkerBackToBase -= CommandCenter.SetCommandUploadResurs;
     }
 
     private Worker CreateWorker()
@@ -94,6 +91,6 @@ public class Base : MonoBehaviour
 
     public void NotifyResursFound(Resource resurs)
     {
-        OnNotify?.Invoke(this, resurs);
+        _mapStoreResurs.AddResurs(resurs);
     }
 }

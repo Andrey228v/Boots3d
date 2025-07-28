@@ -17,7 +17,7 @@ namespace Assets.Scripts.BasesObjects
         {
             resurs.transform.SetParent(_storePosition);
             resurs.transform.position = _storePoint.position;
-            resurs.transform.rotation = Quaternion.LookRotation(new Vector3(0, 0, 0));
+            resurs.transform.rotation = Quaternion.LookRotation(transform.position);
             _storePoint.position = new Vector3(_storePoint.position.x, _storePoint.position.y + resurs.GetHight(), _storePoint.position.z);
             _resursCount++;
             OnAppend?.Invoke(_resursCount);

@@ -1059,7 +1059,6 @@ GameObject:
   - component: {fileID: 1100031826488853047}
   - component: {fileID: 790250650342221163}
   - component: {fileID: 7888496411170474646}
-  - component: {fileID: 7272050523756493074}
   - component: {fileID: 1628914203437906895}
   - component: {fileID: -6936249768013482019}
   m_Layer: 0
@@ -1142,7 +1141,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speedStayState: 0
-  _speedStayMove: 5
+  _speedStayMove: 10
 --- !u!114 &7888496411170474646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1157,18 +1156,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _handPoint: {fileID: 7209303429063194472}
   _renderer: {fileID: 13700008}
---- !u!114 &7272050523756493074
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 100046}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0fb4e936d4915234d8898ee55d237b79, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!65 &1628914203437906895
 BoxCollider:
   m_ObjectHideFlags: 0

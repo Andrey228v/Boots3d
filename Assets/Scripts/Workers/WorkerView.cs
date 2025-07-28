@@ -12,8 +12,6 @@ namespace Assets.Scripts.Workers
         private Transform _point;
 
         public event Action<Resource> OnTakeResurs;
-        public event Action<Resource> OnUploadObject;
-        public event Action OnBase;
 
         public Resource ObjectTake { get; private set; }
         public bool IsResursTake { get; private set; }
@@ -28,17 +26,15 @@ namespace Assets.Scripts.Workers
             OnTakeResurs?.Invoke(objectTake);
         }
 
-        public void UploadObject()
-        {
-            OnUploadObject?.Invoke(ObjectTake);
-            OnBase?.Invoke();
-            ObjectTake = null;
-            IsResursTake = false;
-        }
-
         public void SetPoint(Transform point)
         {
             _point = point;
+        }
+
+        public void UploadObject()
+        {
+            ObjectTake = null;
+            IsResursTake = false;
         }
 
         public void SetPosition(float speed)
