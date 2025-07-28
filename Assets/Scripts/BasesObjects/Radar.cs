@@ -1,3 +1,4 @@
+using Assets.Scripts.Resurses;
 using DG.Tweening;
 using System;
 using System.Collections;
@@ -14,12 +15,16 @@ public class Radar : MonoBehaviour
 
     private bool _isScaning = true;
     private WaitForSeconds _sleepTime;
+    private Collider[] _hitColliders;
 
     public event Action<Vector3, float, LayerMask> AriaDrawed;
+    public event Action<Resource> OnFounded;
 
-    private void Start()
+    private void Awake()
     {
         _sleepTime = new WaitForSeconds(_periodScan);
+        int maxColliders = 100;
+        _hitColliders = new Collider[maxColliders];
     }
 
     public IEnumerator StartScan()
@@ -36,6 +41,15 @@ public class Radar : MonoBehaviour
     private void ScanComplite()
     {
         _radarAria.DORewind();
-        AriaDrawed?.Invoke(_radarAria.position, _radius, _foundType);
+
+        int length = Physics.OverlapSphereNonAlloc(_radarAria.position, _radius, _hitColliders, _foundType);
+
+        for (int i = 0; i < length; i++) 
+        {
+            if (_hitColliders[i].TryGetComponent(out Resource resurs))
+            {
+                OnFounded?.Invoke(resurs);
+            }
+        }
     }
 }

@@ -6,20 +6,18 @@ using Assets.Scripts.Workers.StateWorker;
 using System;
 using UnityEngine;
 
-[RequireComponent(typeof(WorkerView), typeof(StateMachineWorker), typeof(AIWorker))]
+[RequireComponent(typeof(WorkerView), typeof(StateMachineWorker))]
 public class Worker : MonoBehaviour, ISpawnObject<Worker>
 {
     [SerializeField] private float _distanseTakeObject = 1f;
     [SerializeField] private LayerMask _ignoreLayerUnit;
 
     private StateMachineWorker _stateMachinWorker;
-    private AIWorker _aiWorker;
+    
     private Store _store;
 
     public event Action<Worker> DestroedSpawnObject;
-    public event Action DeliveredResurs;
     public event Action<Worker> RealisedWorker;
-    public event Action<Resource> OnUploadObject;
 
     public Base BaseOwn { get; private set; }
     public bool IsFree { get; private set; }
@@ -30,27 +28,8 @@ public class Worker : MonoBehaviour, ISpawnObject<Worker>
     {
         View = GetComponent<WorkerView>();
         _stateMachinWorker = GetComponent<StateMachineWorker>();
-        _aiWorker = GetComponent<AIWorker>();
         _ignoreLayerUnit = ~_ignoreLayerUnit;
         IsFree = true;
-    }
-
-    private void OnTriggerStay(Collider other)
-    {
-        if (_aiWorker.IsOnBase && View.IsResursTake == true && _aiWorker.IsTracking == false && IsFree == false)
-        {
-            DeliveredResurs?.Invoke();
-            OnUploadObject?.Invoke(View.ObjectTake);
-            _store.Append(View.ObjectTake);
-            View.UploadObject();
-            _stateMachinWorker.SelectState(WorkerStateType.Wait);
-            RealisedWorker?.Invoke(this);
-        }
-        else if (_aiWorker.IsOnBase && View.IsResursTake == false && _aiWorker.IsTracking == false && IsFree == false)
-        {
-            _stateMachinWorker.SelectState(WorkerStateType.Wait);
-            RealisedWorker?.Invoke(this);
-        }
     }
 
     public void Init(Base baseOwn, Store store, bool isFree)
@@ -64,25 +43,21 @@ public class Worker : MonoBehaviour, ISpawnObject<Worker>
     {
         View.SetPoint(resurs.transform);
         _stateMachinWorker.SelectState(WorkerStateType.Run);
-        _aiWorker.Tracking(resurs, View, _distanseTakeObject, _ignoreLayerUnit);
         TargetResurs = resurs;
+        resurs.SetWorker(this);
+    }
+
+    public void UploadObject()
+    {
+        _store.Append(View.ObjectTake);
+        View.UploadObject();
+        _stateMachinWorker.SelectState(WorkerStateType.Wait);
     }
 
     public void BackToBase()
     {
         View.SetPoint(BaseOwn.transform);
-        _aiWorker.SetIsTracking(false);
         _stateMachinWorker.SelectState(WorkerStateType.Run);
-    }
-
-    public void SetBase(Base baseOwn)
-    {
-        BaseOwn = baseOwn;
-    }
-
-    public void SetStore(Store store)
-    {
-        _store = store;
     }
 
     public void SetIsFree(bool isFree)
