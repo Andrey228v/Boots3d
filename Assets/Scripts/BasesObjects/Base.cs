@@ -2,7 +2,6 @@ using Assets.Scripts;
 using Assets.Scripts.BasesObjects;
 using Assets.Scripts.Resurses;
 using Assets.Scripts.Spawners;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,7 +36,7 @@ public class Base : MonoBehaviour
             worker.View.SetColor(_colorWorker);
         }
 
-        CommandCenter = new CommandCenter(_workersList, _baseQueuePosition.GetPosition(), _mapStoreResurs);
+        CommandCenter = new CommandCenter(_workersList, _baseQueuePosition.GetPosition());
 
         _baseUI.SetCountWorker(_countWorkers);
 
@@ -59,6 +58,17 @@ public class Base : MonoBehaviour
         _triggerOnWorker.OnWorkerBackToBase -= CommandCenter.SetCommandUploadResurs;
     }
 
+    public void UseRadar()
+    {
+        StartCoroutine(_radar.StartScan());
+        StartCoroutine(RequestTakeResursPosition());
+    }
+
+    public void NotifyResursFound(Resource resurs)
+    {
+        _mapStoreResurs.AddResurs(resurs);
+    }
+
     private Worker CreateWorker()
     {
         Worker worker = _baseRespawn.Spawn();
@@ -67,19 +77,13 @@ public class Base : MonoBehaviour
         return worker;
     }
 
-    public void UseRadar()
-    {
-        StartCoroutine(_radar.StartScan());
-        StartCoroutine(RequestTakeResursPosition());
-    }
-
     private IEnumerator RequestTakeResursPosition()
     {
         while (enabled)
         {
-            yield return new WaitUntil(CommandCenter.IsFreeWorkerHave);
+            yield return new WaitUntil(CommandCenter.HasFreeWorkers);
 
-            if (_mapStoreResurs.TryGetFreeResurs(this, out Resource resurs))
+            if (_mapStoreResurs.TryGetFreeResurs(transform.position, out Resource resurs))
             {
                 Debug.DrawRay(transform.position, resurs.transform.position - transform.position, Color.yellow, 3f);
                 CommandCenter.SetCommandTakeResurs(resurs);
@@ -87,10 +91,5 @@ public class Base : MonoBehaviour
 
             yield return null;
         }
-    }
-
-    public void NotifyResursFound(Resource resurs)
-    {
-        _mapStoreResurs.AddResurs(resurs);
     }
 }

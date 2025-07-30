@@ -25,12 +25,12 @@ namespace Assets.Scripts
             }
         }
 
-        public bool TryGetFreeResurs(Base source, out Resource resurs)
+        public bool TryGetFreeResurs(Vector3 source, out Resource resurs)
         {
             bool isFound = false;
             resurs = null;
 
-            var sortResurs = _freeResurses.OrderBy(n => Vector3.Distance(n.transform.position, source.transform.position));
+            var sortResurs = _freeResurses.OrderBy(n => Vector3.Distance(n.transform.position, source));
 
             foreach (Resource res in sortResurs)
             {
