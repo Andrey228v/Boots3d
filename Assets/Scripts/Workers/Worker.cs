@@ -6,14 +6,15 @@ using Assets.Scripts.Workers.StateWorker;
 using System;
 using UnityEngine;
 
-[RequireComponent(typeof(WorkerView), typeof(StateMachineWorker))]
+[RequireComponent(typeof(WorkerView), typeof(StateMachineWorker), typeof(WorkerResursTrigger))]
 public class Worker : MonoBehaviour, ISpawnObject<Worker>
 {
     [SerializeField] private float _distanseTakeObject = 1f;
     [SerializeField] private LayerMask _ignoreLayerUnit;
 
     private StateMachineWorker _stateMachinWorker;
-    
+    private WorkerResursTrigger _resursTrigger;
+
     private Store _store;
 
     public event Action<Worker> DestroedSpawnObject;
@@ -28,8 +29,17 @@ public class Worker : MonoBehaviour, ISpawnObject<Worker>
     {
         View = GetComponent<WorkerView>();
         _stateMachinWorker = GetComponent<StateMachineWorker>();
+        _resursTrigger = GetComponent<WorkerResursTrigger>();
         _ignoreLayerUnit = ~_ignoreLayerUnit;
         IsFree = true;
+        _resursTrigger.OnResourceTrigger += View.TakeObject;
+        View.OnTakeResurs += BackToBase;
+    }
+
+    private void OnDestroy()
+    {
+        _resursTrigger.OnResourceTrigger -= View.TakeObject;
+        View.OnTakeResurs += BackToBase;
     }
 
     public void Init(Base baseOwn, Store store, bool isFree)
@@ -44,7 +54,7 @@ public class Worker : MonoBehaviour, ISpawnObject<Worker>
         View.SetPoint(resurs.transform);
         _stateMachinWorker.SelectState(WorkerStateType.Run);
         TargetResurs = resurs;
-        resurs.SetWorker(this);
+        _resursTrigger.SetTakeResource(resurs);
     }
 
     public void UploadObject()

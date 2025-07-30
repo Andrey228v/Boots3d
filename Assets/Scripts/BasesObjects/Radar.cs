@@ -17,7 +17,6 @@ public class Radar : MonoBehaviour
     private WaitForSeconds _sleepTime;
     private Collider[] _hitColliders;
 
-    public event Action<Vector3, float, LayerMask> AriaDrawed;
     public event Action<Resource> OnFounded;
 
     private void Awake()

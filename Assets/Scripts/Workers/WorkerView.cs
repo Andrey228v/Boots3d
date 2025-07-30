@@ -11,7 +11,7 @@ namespace Assets.Scripts.Workers
 
         private Transform _point;
 
-        public event Action<Resource> OnTakeResurs;
+        public event Action OnTakeResurs;
 
         public Resource ObjectTake { get; private set; }
         public bool IsResursTake { get; private set; }
@@ -23,7 +23,7 @@ namespace Assets.Scripts.Workers
             objectTake.transform.SetParent(_handPoint);
             objectTake.transform.position = _handPoint.position;
             IsResursTake = true;
-            OnTakeResurs?.Invoke(objectTake);
+            OnTakeResurs?.Invoke();
         }
 
         public void SetPoint(Transform point)
