@@ -45,6 +45,7 @@ namespace Assets.Scripts.BasesObjects
         public void AddFreeWorker(Worker worker)
         {
             worker.SetIsFree(true);
+            _allWorker.Add(worker);
             _freeWorker.Add(worker);
         }
 

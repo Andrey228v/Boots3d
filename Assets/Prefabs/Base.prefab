@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 1229597327888432117}
   - component: {fileID: 6648821577066124525}
   - component: {fileID: 2900540776688538775}
+  - component: {fileID: 4823108559791046292}
   m_Layer: 2
   m_Name: RespawnPlane
   m_TagString: Untagged
@@ -68,7 +69,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: fa6a9e960dd21794eb65dc23736972b8, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -150,6 +151,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b61c40605d54374da4a5ed44ae70e68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &4823108559791046292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 542304951589081317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35c994ead0b404743be9f5abbde0aecd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _materialSelected: {fileID: 2100000, guid: 60e369f8b987ba947beb66d72c91fc06, type: 2}
 --- !u!1 &2135510210388472574
 GameObject:
   m_ObjectHideFlags: 0
@@ -160,7 +174,9 @@ GameObject:
   m_Component:
   - component: {fileID: 2416405298518611330}
   - component: {fileID: 4843172081611414479}
-  m_Layer: 2
+  - component: {fileID: 289278940384098452}
+  - component: {fileID: 9116310292372429136}
+  m_Layer: 0
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -211,6 +227,43 @@ MonoBehaviour:
   _countWorkers: 0
   _mapStoreResurs: {fileID: 0}
   _triggerOnWorker: {fileID: 8049806147134846634}
+  _baseColorChanger: {fileID: 4823108559791046292}
+  _flagController: {fileID: 9116310292372429136}
+--- !u!65 &289278940384098452
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2135510210388472574}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 4.67, y: 1.66, z: 4.7}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &9116310292372429136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2135510210388472574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d35e9b8156612414e8cac13c58637693, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _flagPrefab: {fileID: 1894902477893542137, guid: 0e7ba653a5078cc438460a7ce66df2b2, type: 3}
+  _flagsParent: {fileID: 0}
 --- !u!1 &2989930748861066263
 GameObject:
   m_ObjectHideFlags: 0
@@ -222,7 +275,7 @@ GameObject:
   - component: {fileID: 8060507428222339325}
   - component: {fileID: 8049806147134846634}
   - component: {fileID: 752211226672587471}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: BaseTriggerOnWorker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -325,6 +378,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _storePosition: {fileID: 6814172999248736327}
   _storePoint: {fileID: 6066483499006142785}
+  _unitPrice: 6
 --- !u!1 &4373943289656787878
 GameObject:
   m_ObjectHideFlags: 0

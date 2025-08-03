@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Base : MonoBehaviour
+public class Base : MonoBehaviour, ISelectable
 {
     [SerializeField] private Transform _workerPrefab;
     [SerializeField] private SpawnerWorker _baseRespawn;
@@ -18,6 +18,8 @@ public class Base : MonoBehaviour
     [SerializeField] private int _countWorkers;
     [SerializeField] private MapStoreResurs _mapStoreResurs;
     [SerializeField] private BaseTriggerOnWorker _triggerOnWorker;
+    [SerializeField] private BaseColorChanger _baseColorChanger;
+    [SerializeField] private FlagController _flagController;
 
     private List<Worker> _workersList;
     private Color _colorWorker;
@@ -32,8 +34,6 @@ public class Base : MonoBehaviour
         for (int i = 0; i < _countWorkers; i++)
         {
             Worker worker = CreateWorker();
-            _workersList.Add(worker);
-            worker.View.SetColor(_colorWorker);
         }
 
         CommandCenter = new CommandCenter(_workersList, _baseQueuePosition.GetPosition());
@@ -41,9 +41,10 @@ public class Base : MonoBehaviour
         _baseUI.SetCountWorker(_countWorkers);
 
         _store.OnAppend += _baseUI.SetCountResurses;
+        _store.OnAccumulated += BuyUnit;
+        _store.OnSpent += NotifyBuy;
         _radar.OnFounded += NotifyResursFound;
         _triggerOnWorker.OnWorkerBackToBase += CommandCenter.SetCommandUploadResurs;
-
     }
 
     private void Start()
@@ -54,8 +55,9 @@ public class Base : MonoBehaviour
     private void OnDestroy()
     {
         _store.OnAppend -= _baseUI.SetCountResurses;
+        _store.OnAccumulated -= BuyUnit;
+        _store.OnSpent -= NotifyBuy;
         _radar.OnFounded -= NotifyResursFound;
-        _triggerOnWorker.OnWorkerBackToBase -= CommandCenter.SetCommandUploadResurs;
     }
 
     public void UseRadar()
@@ -69,13 +71,47 @@ public class Base : MonoBehaviour
         _mapStoreResurs.AddResurs(resurs);
     }
 
+    public void NotifyBuy(Resource resurs)
+    {
+        _mapStoreResurs.RemoveResource(resurs);
+    }
+
+    public void BuyUnit()
+    {
+        Worker worker = CreateWorker();
+        _store.SpentForBuyWorker();
+        CommandCenter.AddFreeWorker(worker);
+    }
+
     private Worker CreateWorker()
     {
         Worker worker = _baseRespawn.Spawn();
         worker.Init(this, _store, true);
+        _workersList.Add(worker);
+        worker.View.SetColor(_colorWorker);
 
         return worker;
     }
+
+    public void Select()
+    {
+        _flagController.SetFlag();
+        _baseColorChanger.Select();
+    }
+
+    public void UnSelect()
+    {
+        _flagController.UnSetFlag();
+        _baseColorChanger.UnSelect();
+    }
+
+
+
+    //private IEnumerator RequestGoToFlag()
+    //{
+
+    //}
+
 
     private IEnumerator RequestTakeResursPosition()
     {
