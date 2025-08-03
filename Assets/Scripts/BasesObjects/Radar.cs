@@ -21,8 +21,8 @@ public class Radar : MonoBehaviour
 
     private void Awake()
     {
-        _sleepTime = new WaitForSeconds(_periodScan);
         int maxColliders = 100;
+        _sleepTime = new WaitForSeconds(_periodScan);
         _hitColliders = new Collider[maxColliders];
     }
 

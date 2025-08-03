@@ -1061,6 +1061,7 @@ GameObject:
   - component: {fileID: 7888496411170474646}
   - component: {fileID: 1628914203437906895}
   - component: {fileID: -6936249768013482019}
+  - component: {fileID: 116555441125581901}
   m_Layer: 0
   m_Name: SimpleFarmer_FarmersDaughter_Black
   m_TagString: Untagged
@@ -1141,7 +1142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speedStayState: 0
-  _speedStayMove: 10
+  _speedStayMove: 5
 --- !u!114 &7888496411170474646
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1204,6 +1205,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &116555441125581901
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 100046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26ff3257c248bd049b7a826bb64e8e96, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5985323874912926303
 GameObject:
   m_ObjectHideFlags: 0

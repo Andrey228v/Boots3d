@@ -25,6 +25,11 @@ namespace Assets.Scripts
             }
         }
 
+        public void RemoveResource(Resource resurs)
+        {
+            _resursesTaked.Remove(resurs);
+        }
+
         public bool TryGetFreeResurs(Vector3 source, out Resource resurs)
         {
             bool isFound = false;

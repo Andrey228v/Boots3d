@@ -31,6 +31,7 @@ namespace Assets.Scripts.Resurses
         {
             if (DestroedSpawnObject != null) 
             {
+                _collider.enabled = true;
                 DestroedSpawnObject?.Invoke(this);
             }
             else

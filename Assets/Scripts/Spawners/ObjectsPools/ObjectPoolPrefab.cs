@@ -34,6 +34,7 @@ namespace Assets.Scripts.Spawners.ObjectsPools
         private void OnTakeFromPool(T figure)
         {
             figure.DestroedSpawnObject += Release;
+            figure.transform.SetParent(_spawnContainer);
             figure.gameObject.SetActive(true);
         }
 
