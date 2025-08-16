@@ -1,3 +1,4 @@
+using Assets.Scripts;
 using Assets.Scripts.BasesObjects;
 using Assets.Scripts.Resurses;
 using Assets.Scripts.Spawners;
@@ -7,6 +8,7 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(WorkerView), typeof(StateMachineWorker), typeof(WorkerResursTrigger))]
+[RequireComponent(typeof(WorkerFlagTrigger))]
 public class Worker : MonoBehaviour, ISpawnObject<Worker>
 {
     [SerializeField] private float _distanseTakeObject = 1f;
@@ -24,22 +26,29 @@ public class Worker : MonoBehaviour, ISpawnObject<Worker>
     public bool IsFree { get; private set; }
     public WorkerView View { get; private set; }
     public Resource TargetResurs { get; private set; }
+    public WorkerFlagTrigger FlagTrigger { get; private set; }
 
     private void Awake()
     {
         View = GetComponent<WorkerView>();
         _stateMachinWorker = GetComponent<StateMachineWorker>();
         _resursTrigger = GetComponent<WorkerResursTrigger>();
+        FlagTrigger = GetComponent<WorkerFlagTrigger>();
         _ignoreLayerUnit = ~_ignoreLayerUnit;
         IsFree = true;
+
         _resursTrigger.OnResourceTrigger += View.TakeObject;
         View.OnTakeResurs += BackToBase;
+        FlagTrigger.OnFlagTrigger += BuildBase;
+        FlagTrigger.SetWorker(this);
     }
 
     private void OnDestroy()
     {
         _resursTrigger.OnResourceTrigger -= View.TakeObject;
-        View.OnTakeResurs += BackToBase;
+        View.OnTakeResurs -= BackToBase;
+        FlagTrigger.OnFlagTrigger -= BuildBase;
+
     }
 
     public void Init(Base baseOwn, Store store, bool isFree)
@@ -70,6 +79,18 @@ public class Worker : MonoBehaviour, ISpawnObject<Worker>
         _stateMachinWorker.SelectState(WorkerStateType.Run);
     }
 
+    public void GetFlag(Flag flag)
+    {
+        View.SetPoint(flag.transform);
+        FlagTrigger.SetFlag(flag);
+        _stateMachinWorker.SelectState(WorkerStateType.Run);
+    }
+
+    public void BuildBase(Flag flag, Worker worker)
+    {
+        _stateMachinWorker.SelectState(WorkerStateType.Wait);
+    }
+
     public void SetIsFree(bool isFree)
     {
         IsFree = isFree;
@@ -78,5 +99,10 @@ public class Worker : MonoBehaviour, ISpawnObject<Worker>
     public void Despawn()
     {
         DestroedSpawnObject?.Invoke(this);
+    }
+
+    public bool IsPoinReach()
+    {
+        return View.transform.position == View.GetPoint().position;
     }
 }

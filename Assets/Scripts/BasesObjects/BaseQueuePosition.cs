@@ -34,7 +34,13 @@ namespace Assets.Scripts.BasesObjects
 
         public List<BaseSlotWorker> GetPosition()
         {
+            if(_queuePosition == null)
+            {
+                Awake();
+            }
+
             List<BaseSlotWorker> positions = new(_queuePosition);
+            
 
             return positions;
         }

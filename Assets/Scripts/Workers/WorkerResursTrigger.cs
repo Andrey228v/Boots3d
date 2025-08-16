@@ -10,7 +10,7 @@ namespace Assets.Scripts.Workers
 
         public event Action<Resource> OnResourceTrigger;
 
-        private void OnTriggerEnter(Collider other)
+        private void OnTriggerStay(Collider other)
         {
             if (other.TryGetComponent(out Resource resource))
             {

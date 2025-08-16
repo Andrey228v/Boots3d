@@ -1,11 +1,15 @@
 using Assets.Scripts;
 using Assets.Scripts.BasesObjects;
+using Assets.Scripts.BasesObjects.BaseCommands;
+using Assets.Scripts.BasesObjects.BaseState;
 using Assets.Scripts.Resurses;
 using Assets.Scripts.Spawners;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(StateMachineBase))]
 public class Base : MonoBehaviour, ISelectable
 {
     [SerializeField] private Transform _workerPrefab;
@@ -21,49 +25,66 @@ public class Base : MonoBehaviour, ISelectable
     [SerializeField] private BaseColorChanger _baseColorChanger;
     [SerializeField] private FlagController _flagController;
 
-    private List<Worker> _workersList;
     private Color _colorWorker;
+    private StateMachineBase _stateMachine;
 
+    public event Action<Worker> OnWorkerCreated;
+
+    public List<Worker> WorkersList { get; private set; }
     public CommandCenter CommandCenter { get; private set; }
+    public Stack<ICommand> Commands { get; private set; }
 
     private void Awake()
     {
-        _workersList = new List<Worker>();
+        WorkersList = new List<Worker>();
         _colorWorker = UnityEngine.Random.ColorHSV();
+
+        Commands = new Stack<ICommand>();
+
+        _stateMachine = GetComponent<StateMachineBase>();
 
         for (int i = 0; i < _countWorkers; i++)
         {
             Worker worker = CreateWorker();
         }
 
-        CommandCenter = new CommandCenter(_workersList, _baseQueuePosition.GetPosition());
-
+        CommandCenter = new CommandCenter(WorkersList, _baseQueuePosition.GetPosition());
+        
         _baseUI.SetCountWorker(_countWorkers);
 
         _store.OnAppend += _baseUI.SetCountResurses;
-        _store.OnAccumulated += BuyUnit;
-        _store.OnSpent += NotifyBuy;
         _radar.OnFounded += NotifyResursFound;
         _triggerOnWorker.OnWorkerBackToBase += CommandCenter.SetCommandUploadResurs;
+        _flagController.OnSet += StartAccumulate;
     }
 
     private void Start()
     {
         UseRadar();
+        StarRequestCommand();
     }
 
     private void OnDestroy()
     {
         _store.OnAppend -= _baseUI.SetCountResurses;
-        _store.OnAccumulated -= BuyUnit;
-        _store.OnSpent -= NotifyBuy;
         _radar.OnFounded -= NotifyResursFound;
+        _triggerOnWorker.OnWorkerBackToBase -= CommandCenter.SetCommandUploadResurs;
+        _flagController.OnSet -= StartAccumulate;
+
+        foreach (var worker in WorkersList) 
+        {
+            worker.FlagTrigger.OnFlagTrigger -= _flagController.DestroyFlag;
+        }
     }
 
     public void UseRadar()
     {
         StartCoroutine(_radar.StartScan());
-        StartCoroutine(RequestTakeResursPosition());
+    }
+
+    public void StarRequestCommand()
+    {
+        StartCoroutine(RequestCommand());
     }
 
     public void NotifyResursFound(Resource resurs)
@@ -71,61 +92,64 @@ public class Base : MonoBehaviour, ISelectable
         _mapStoreResurs.AddResurs(resurs);
     }
 
-    public void NotifyBuy(Resource resurs)
-    {
-        _mapStoreResurs.RemoveResource(resurs);
-    }
-
-    public void BuyUnit()
-    {
-        Worker worker = CreateWorker();
-        _store.SpentForBuyWorker();
-        CommandCenter.AddFreeWorker(worker);
-    }
-
-    private Worker CreateWorker()
+    public Worker CreateWorker()
     {
         Worker worker = _baseRespawn.Spawn();
         worker.Init(this, _store, true);
-        _workersList.Add(worker);
+        WorkersList.Add(worker);
         worker.View.SetColor(_colorWorker);
+        OnWorkerCreated?.Invoke(worker);
+        worker.FlagTrigger.OnFlagTrigger += _flagController.DestroyFlag;
 
         return worker;
     }
 
     public void Select()
     {
-        _flagController.SetFlag();
         _baseColorChanger.Select();
+        _flagController.TrySetFlag();
     }
 
     public void UnSelect()
     {
         _flagController.UnSetFlag();
-        _baseColorChanger.UnSelect();
+        _baseColorChanger.ResetColor();
     }
 
+    public void StartAccumulate(Flag flag)
+    {
+        StartCoroutine(RequestAccumulateBase());
+    }
 
+    public void SelectState(BaseStateType stateType)
+    {
+        _stateMachine.SelectState(stateType);
+    }
 
-    //private IEnumerator RequestGoToFlag()
-    //{
+    public IEnumerator RequestAccumulateBase()
+    {
+        yield return new WaitUntil(_flagController.IsFlagSet);
+        yield return new WaitUntil(CommandCenter.HasUndoFreeWorkers);
 
-    //}
+        _stateMachine.SelectState(BaseStateType.Create);
+    }
 
+    public void SetMapStoreResurs(MapStoreResurs mapStoreResurs)
+    {
+        _mapStoreResurs = mapStoreResurs;
+        _stateMachine.SetMapStoreResurs(_mapStoreResurs);
+    }
 
-    private IEnumerator RequestTakeResursPosition()
+    private IEnumerator RequestCommand()
     {
         while (enabled)
         {
-            yield return new WaitUntil(CommandCenter.HasFreeWorkers);
+            yield return new WaitUntil(() => Commands.Count > 0);
 
-            if (_mapStoreResurs.TryGetFreeResurs(transform.position, out Resource resurs))
+            if (Commands.Peek().CanExecute())
             {
-                Debug.DrawRay(transform.position, resurs.transform.position - transform.position, Color.yellow, 3f);
-                CommandCenter.SetCommandTakeResurs(resurs);
+                Commands.Pop().Execute();
             }
-
-            yield return null;
         }
     }
 }

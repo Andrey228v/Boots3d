@@ -11,7 +11,6 @@ namespace Assets.Scripts.Workers
         [SerializeField] private float _speedStayState = 0f;
         [SerializeField] private float _speedStayMove = 5f;
         
-
         private WorkerView _view;
         private Animator _animator;
         private StayState _stayState;
