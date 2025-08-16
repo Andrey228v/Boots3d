@@ -6,37 +6,53 @@ namespace Assets.Scripts
 {
     public class FlagController : MonoBehaviour
     {
-        [SerializeField] private Transform _flagPrefab;
+        [SerializeField] private Flag _flagPrefab;
 
-        private Coroutine _coroutine;
-        private Transform _flagSet;
+        private Coroutine _coroutineSetFlag;
+        private Coroutine _coroutineCancel;
+        private Flag _flagSet;
         private bool _isActive;
 
-        public event Action<Transform> OnSet;
+        public event Action<Flag> OnSet;
 
-        public void SetFlag()
+        public bool IsSet { get; private set; }
+
+        private void Start()
+        {
+            IsSet = false;
+        }
+
+        public bool TrySetFlag()
         {
             _isActive = true;
-            _coroutine = StartCoroutine(WaitButton());
+            _coroutineSetFlag = StartCoroutine(WaitButtonCreate());
+            _coroutineCancel = StartCoroutine(WaitButtonCancel());
+
+            return IsSet;
+        }
+
+        public bool IsFlagSet()
+        {
+            return IsSet;
         }
 
         public void UnSetFlag()
         {
             _isActive = false;
-            StopCoroutine(_coroutine);
         }
 
-        public void DestroyFlag()
+        public void DestroyFlag(Flag flag, Worker worker)
         {
-            Destroy(_flagSet.gameObject);
+            IsSet = false;
+            Destroy(flag.gameObject);
         }
 
-        public Transform GetFlagPosition()
+        public Flag GetFlagPosition()
         {
-            return _flagPrefab;
+            return _flagSet;
         }
 
-        public IEnumerator WaitButton()
+        public IEnumerator WaitButtonCreate()
         {
             while (_isActive) 
             {
@@ -46,18 +62,25 @@ namespace Assets.Scripts
 
                 if (Physics.Raycast(ray, out hit))
                 {
-                    if (_flagSet != null)
-                    {
-                        DestroyFlag();
-                    }
+                    IsSet = true;
 
-                    Transform objectHit = hit.transform;
-                    Transform flag = Instantiate(_flagPrefab);
-                    _flagSet = flag;
-                    flag.position = hit.point;
-                    OnSet?.Invoke(_flagSet);
+                    if (_flagSet == null)
+                    {
+                        Flag flag = Instantiate(_flagPrefab);
+                        _flagSet = flag;
+                        _flagSet.transform.position = hit.point;
+                        OnSet?.Invoke(_flagSet);
+                    }
                 }
             }
+        }
+
+        public IEnumerator WaitButtonCancel()
+        {
+            yield return new WaitForSeconds(0.1f);
+            yield return new WaitUntil(() => Input.anyKeyDown && !Input.GetMouseButtonDown(1));
+            Debug.Log("Отмена установки флага");
+            StopCoroutine(_coroutineSetFlag);
         }
     }
 }

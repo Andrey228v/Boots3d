@@ -31,6 +31,11 @@ namespace Assets.Scripts.Workers
             _point = point;
         }
 
+        public Transform GetPoint()
+        {
+            return _point;
+        }
+
         public void UploadObject()
         {
             ObjectTake = null;

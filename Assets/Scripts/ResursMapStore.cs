@@ -35,15 +35,18 @@ namespace Assets.Scripts
             bool isFound = false;
             resurs = null;
 
-            var sortResurs = _freeResurses.OrderBy(n => Vector3.Distance(n.transform.position, source));
-
-            foreach (Resource res in sortResurs)
+            if(_freeResurses.Count > 0)
             {
-                resurs = res;
-                isFound = true;
-                _freeResurses.Remove(res);
-                _resursesTaked.Add(res);
-                break;
+                var sortResurs = _freeResurses.OrderBy(n => Vector3.Distance(n.transform.position, source));
+
+                foreach (Resource res in sortResurs)
+                {
+                    resurs = res;
+                    isFound = true;
+                    _freeResurses.Remove(res);
+                    _resursesTaked.Add(res);
+                    break;
+                }
             }
 
             return isFound;

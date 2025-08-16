@@ -176,6 +176,7 @@ GameObject:
   - component: {fileID: 4843172081611414479}
   - component: {fileID: 289278940384098452}
   - component: {fileID: 9116310292372429136}
+  - component: {fileID: 6236674105741248595}
   m_Layer: 0
   m_Name: Base
   m_TagString: Untagged
@@ -248,7 +249,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 4.67, y: 1.66, z: 4.7}
+  m_Size: {x: 4.67, y: 1.54, z: 4.7}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &9116310292372429136
 MonoBehaviour:
@@ -262,8 +263,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d35e9b8156612414e8cac13c58637693, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _flagPrefab: {fileID: 1894902477893542137, guid: 0e7ba653a5078cc438460a7ce66df2b2, type: 3}
-  _flagsParent: {fileID: 0}
+  _flagPrefab: {fileID: 2177508063971002694, guid: 0e7ba653a5078cc438460a7ce66df2b2, type: 3}
+--- !u!114 &6236674105741248595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2135510210388472574}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 015d0829b70d42747903ce10e68a5521, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _base: {fileID: 4843172081611414479}
+  _store: {fileID: 6406438748658344645}
+  _mapStoreResurs: {fileID: 0}
+  _flagController: {fileID: 9116310292372429136}
 --- !u!1 &2989930748861066263
 GameObject:
   m_ObjectHideFlags: 0
@@ -379,6 +395,7 @@ MonoBehaviour:
   _storePosition: {fileID: 6814172999248736327}
   _storePoint: {fileID: 6066483499006142785}
   _unitPrice: 6
+  _basePrice: 12
 --- !u!1 &4373943289656787878
 GameObject:
   m_ObjectHideFlags: 0

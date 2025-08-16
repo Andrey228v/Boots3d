@@ -21,7 +21,7 @@ namespace Assets.Scripts
             _meshRenderer.material = _materialSelected;
         }
 
-        public void UnSelect()
+        public void ResetColor()
         {
             _meshRenderer.material = _currentMaterial;
         }

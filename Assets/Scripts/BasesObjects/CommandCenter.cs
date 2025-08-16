@@ -42,11 +42,31 @@ namespace Assets.Scripts.BasesObjects
             return _freeWorker.Count > 0;
         }
 
+        public bool HasUndoFreeWorkers()
+        {
+            return _allWorker.Count > 1;
+        }
+
+        public void AddWorker(Worker worker)
+        {
+            _allWorker.Add(worker);
+            AddFreeWorker(worker);
+
+        }
+
         public void AddFreeWorker(Worker worker)
         {
-            worker.SetIsFree(true);
-            _allWorker.Add(worker);
+            worker.SetIsFree(true); 
             _freeWorker.Add(worker);
+        }
+
+        public Worker SetCommandBildBase(Flag flag)
+        {
+            Worker worker = GetFreeWorker();
+            worker.GetFlag(flag);
+            _allWorker.Remove(worker);
+
+            return worker;
         }
 
         private Worker GetFreeWorker()

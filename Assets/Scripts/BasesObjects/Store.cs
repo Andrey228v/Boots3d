@@ -10,12 +10,14 @@ namespace Assets.Scripts.BasesObjects
         [SerializeField] private Transform _storePosition;
         [SerializeField] private Transform _storePoint;
         [SerializeField] private int _unitPrice = 6;
+        [SerializeField] private int _basePrice = 12;
 
         private int _resursCount = 0;
         private Stack<Resource> _resources;
 
         public event Action<int> OnAppend;
-        public event Action OnAccumulated;
+        public event Action OnAccumulatedForUnit;
+        public event Action OnAccumulatedForBase;
         public event Action<Resource> OnSpent;
 
         private void Awake()
@@ -34,8 +36,14 @@ namespace Assets.Scripts.BasesObjects
 
             if (_resursCount == _unitPrice)
             {
-                OnAccumulated?.Invoke();
+                OnAccumulatedForUnit?.Invoke();
             }
+
+            if (_resursCount == _basePrice)
+            {
+                OnAccumulatedForBase?.Invoke();
+            }
+
 
             OnAppend?.Invoke(_resursCount);
         }
@@ -43,8 +51,19 @@ namespace Assets.Scripts.BasesObjects
         public void SpentForBuyWorker()
         {
             _resursCount -= _unitPrice;
+            DestroyResurs(_unitPrice);
+        }
 
-            for (int i = 0; i < _unitPrice; i++) 
+        public void SpentForBuyBase()
+        {
+            _resursCount -= _basePrice;
+            DestroyResurs(_basePrice);
+        }
+
+        private void DestroyResurs(int resursCount)
+        {
+
+            for (int i = 0; i < resursCount; i++)
             {
                 Resource resource = _resources.Pop();
                 resource.Despawn();
