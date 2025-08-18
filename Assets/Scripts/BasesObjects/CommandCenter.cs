@@ -1,22 +1,26 @@
 ﻿using Assets.Scripts.Resurses;
+using System;
 using System.Collections.Generic;
 
 namespace Assets.Scripts.BasesObjects
 {
     public class CommandCenter 
     {
-        private List<Worker> _allWorker;
         private List<Worker> _freeWorker;
         private List<BaseSlotWorker> _positionsBase;
 
-        public CommandCenter(List<Worker> workers, List<BaseSlotWorker> positions)
+        public event Action<Worker> OnWorkerReturn;
+
+        public CommandCenter(List<BaseSlotWorker> positions)
         {
-            _allWorker = new List<Worker>(workers);
-            _freeWorker = new List<Worker>(workers);
+            AllWorker = new List<Worker>();
+            _freeWorker = new List<Worker>();
             _positionsBase = positions;
 
             Init();
         }
+
+        public List<Worker> AllWorker { get; private set; }
 
         public void SetCommandTakeResurs(Resource resurs)
         {
@@ -24,17 +28,16 @@ namespace Assets.Scripts.BasesObjects
             worker.GetResurs(resurs);
         }
 
-        public void SetCommandUploadResurs(Worker worker)
+        public void ReturnWorker(Worker worker)
         {
-            if (_allWorker.Contains(worker))
+            if (worker.View.IsResursTake)
             {
-                if (worker.View.IsResursTake)
+                if (AllWorker.Contains(worker))
                 {
-                    worker.UploadObject();
+                    AddFreeWorker(worker);
+                    OnWorkerReturn?.Invoke(worker);
                 }
-
-                AddFreeWorker(worker);
-            }
+            }            
         }
 
         public bool HasFreeWorkers()
@@ -44,14 +47,13 @@ namespace Assets.Scripts.BasesObjects
 
         public bool HasUndoFreeWorkers()
         {
-            return _allWorker.Count > 1;
+            return AllWorker.Count > 1;
         }
 
         public void AddWorker(Worker worker)
         {
-            _allWorker.Add(worker);
+            AllWorker.Add(worker);
             AddFreeWorker(worker);
-
         }
 
         public void AddFreeWorker(Worker worker)
@@ -64,7 +66,7 @@ namespace Assets.Scripts.BasesObjects
         {
             Worker worker = GetFreeWorker();
             worker.GetFlag(flag);
-            _allWorker.Remove(worker);
+            AllWorker.Remove(worker);
 
             return worker;
         }
@@ -72,7 +74,7 @@ namespace Assets.Scripts.BasesObjects
         private Worker GetFreeWorker()
         {
             Worker worker = _freeWorker[0];
-            _freeWorker.RemoveAt(0);
+            _freeWorker.Remove(worker);
             worker.SetIsFree(false);
 
             return worker;
@@ -98,11 +100,11 @@ namespace Assets.Scripts.BasesObjects
 
         private void Init()
         {
-            for (int i = 0; i < _allWorker.Count; i++)
+            for (int i = 0; i < AllWorker.Count; i++)
             {
                 if (TryGetFreeBasePosition(out BaseSlotWorker slot))
                 {
-                    _allWorker[i].transform.position = slot.Position;
+                    AllWorker[i].transform.position = slot.Position;
                     slot.SetIsFree(false);
                 }
             }

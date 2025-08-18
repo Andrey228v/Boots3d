@@ -4,6 +4,7 @@ using Assets.Scripts.BasesObjects.BaseCommands;
 using Assets.Scripts.BasesObjects.BaseState;
 using Assets.Scripts.Resurses;
 using Assets.Scripts.Spawners;
+using Assets.Scripts.Workers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -29,33 +30,34 @@ public class Base : MonoBehaviour, ISelectable
     private StateMachineBase _stateMachine;
 
     public event Action<Worker> OnWorkerCreated;
+    public event Action<Resource> OnUploadResource;
 
-    public List<Worker> WorkersList { get; private set; }
     public CommandCenter CommandCenter { get; private set; }
     public Stack<ICommand> Commands { get; private set; }
 
     private void Awake()
     {
-        WorkersList = new List<Worker>();
         _colorWorker = UnityEngine.Random.ColorHSV();
 
         Commands = new Stack<ICommand>();
 
         _stateMachine = GetComponent<StateMachineBase>();
 
-        for (int i = 0; i < _countWorkers; i++)
-        {
-            Worker worker = CreateWorker();
-        }
+        CommandCenter = new CommandCenter(_baseQueuePosition.GetPosition());
 
-        CommandCenter = new CommandCenter(WorkersList, _baseQueuePosition.GetPosition());
-        
         _baseUI.SetCountWorker(_countWorkers);
 
         _store.OnAppend += _baseUI.SetCountResurses;
         _radar.OnFounded += NotifyResursFound;
-        _triggerOnWorker.OnWorkerBackToBase += CommandCenter.SetCommandUploadResurs;
+        _triggerOnWorker.OnWorkerBackToBase += CommandCenter.ReturnWorker;
+        CommandCenter.OnWorkerReturn += UploadResurs;
+
         _flagController.OnSet += StartAccumulate;
+
+        for (int i = 0; i < _countWorkers; i++)
+        {
+            Worker worker = CreateWorker();
+        }
     }
 
     private void Start()
@@ -68,10 +70,11 @@ public class Base : MonoBehaviour, ISelectable
     {
         _store.OnAppend -= _baseUI.SetCountResurses;
         _radar.OnFounded -= NotifyResursFound;
-        _triggerOnWorker.OnWorkerBackToBase -= CommandCenter.SetCommandUploadResurs;
+        _triggerOnWorker.OnWorkerBackToBase -= CommandCenter.ReturnWorker;
+        CommandCenter.OnWorkerReturn -= UploadResurs;
         _flagController.OnSet -= StartAccumulate;
 
-        foreach (var worker in WorkersList) 
+        foreach (var worker in CommandCenter.AllWorker)
         {
             worker.FlagTrigger.OnFlagTrigger -= _flagController.DestroyFlag;
         }
@@ -95,13 +98,22 @@ public class Base : MonoBehaviour, ISelectable
     public Worker CreateWorker()
     {
         Worker worker = _baseRespawn.Spawn();
-        worker.Init(this, _store, true);
-        WorkersList.Add(worker);
+        worker.Init(this, true);
         worker.View.SetColor(_colorWorker);
         OnWorkerCreated?.Invoke(worker);
         worker.FlagTrigger.OnFlagTrigger += _flagController.DestroyFlag;
+        CommandCenter.AddWorker(worker);
 
         return worker;
+    }
+
+    public void UploadResurs(Worker worker)
+    {
+        if (worker.View.IsResursTake)
+        {
+            _store.Append(worker.View.ObjectTake);
+            worker.UploadObject();
+        }
     }
 
     public void Select()
@@ -146,9 +158,16 @@ public class Base : MonoBehaviour, ISelectable
         {
             yield return new WaitUntil(() => Commands.Count > 0);
 
-            if (Commands.Peek().CanExecute())
+            try
             {
-                Commands.Pop().Execute();
+                if (Commands.Peek().CanExecute())
+                {
+                    Commands.Pop().Execute();
+                }
+            }
+            catch (Exception ex) 
+            {
+                Debug.LogException(ex);
             }
         }
     }

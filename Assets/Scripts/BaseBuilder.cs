@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Assets.Scripts.BasesObjects;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -16,7 +17,7 @@ namespace Assets.Scripts
             {
                 baseUnit.OnWorkerCreated += AddEventToUnit;
 
-                foreach (Worker worker in baseUnit.WorkersList)
+                foreach (Worker worker in baseUnit.CommandCenter.AllWorker)
                 {
                     worker.FlagTrigger.OnFlagTrigger += BuildBase;
                 }
@@ -27,7 +28,7 @@ namespace Assets.Scripts
         {
             foreach (Base baseUnit in _baseList)
             {
-                foreach (Worker worker in baseUnit.WorkersList)
+                foreach (Worker worker in baseUnit.CommandCenter.AllWorker)
                 {
                     worker.FlagTrigger.OnFlagTrigger -= BuildBase;
                 }
@@ -37,11 +38,12 @@ namespace Assets.Scripts
         private void BuildBase(Flag flag, Worker worker)
         {
             Base baseBuild = Instantiate(_basePrefab, _basePerent);
-            Debug.Log(flag.transform.position);
-            baseBuild.transform.position = flag.transform.position;
+            baseBuild.transform.localPosition = flag.transform.position;
             baseBuild.SetMapStoreResurs(_mapStoreResurs);
             _baseList.Add(baseBuild);
             baseBuild.CommandCenter.AddWorker(worker);
+            worker.SetBase(baseBuild);
+            baseBuild.OnWorkerCreated += AddEventToUnit;
         }
 
         private void AddEventToUnit(Worker worker)

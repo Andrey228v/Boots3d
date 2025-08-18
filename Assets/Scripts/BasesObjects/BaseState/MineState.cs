@@ -49,7 +49,6 @@ namespace Assets.Scripts.BasesObjects.BaseState
         {
             Worker worker = _base.CreateWorker();
             _store.SpentForBuyWorker();
-            _base.CommandCenter.AddWorker(worker);
         }
 
         public void NotifyBuy(Resource resurs)
