@@ -1,5 +1,4 @@
-﻿
-using Assets.Scripts.BasesObjects.BaseCommands;
+﻿using Assets.Scripts.BasesObjects.BaseCommands;
 using Assets.Scripts.Resurses;
 using System.Collections.Generic;
 
@@ -31,12 +30,13 @@ namespace Assets.Scripts.BasesObjects.BaseState
         {
             IsAccomulate = false;
             _store.OnAccumulatedForBase += BuyBase;
-
+            _store.OnSpent += NotifyBuy;
         }
 
         public void Exit()
         {
             _store.OnAccumulatedForBase -= BuyBase;
+            _store.OnSpent -= NotifyBuy;
         }
 
         public void UpdateState()
@@ -66,6 +66,11 @@ namespace Assets.Scripts.BasesObjects.BaseState
             _store.SpentForBuyBase();
             CommandCreateBase commandCreateBase = new CommandCreateBase(_commandCenter, _flagController);
             _commands.Push(commandCreateBase);
+        }
+
+        public void NotifyBuy(Resource resurs)
+        {
+            _mapStoreResours.RemoveResource(resurs);
         }
     }
 }

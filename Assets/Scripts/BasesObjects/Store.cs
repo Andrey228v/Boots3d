@@ -66,9 +66,9 @@ namespace Assets.Scripts.BasesObjects
             for (int i = 0; i < resursCount; i++)
             {
                 Resource resource = _resources.Pop();
-                resource.Despawn();
                 _storePoint.position = new Vector3(_storePoint.position.x, _storePoint.position.y - resource.GetHight(), _storePoint.position.z);
                 OnSpent?.Invoke(resource);
+                resource.Despawn();
             }
         }
     }

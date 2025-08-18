@@ -17,16 +17,15 @@ public class Worker : MonoBehaviour, ISpawnObject<Worker>
     private StateMachineWorker _stateMachinWorker;
     private WorkerResursTrigger _resursTrigger;
 
-    private Store _store;
-
     public event Action<Worker> DestroedSpawnObject;
     public event Action<Worker> RealisedWorker;
 
     public Base BaseOwn { get; private set; }
-    public bool IsFree { get; private set; }
+
     public WorkerView View { get; private set; }
     public Resource TargetResurs { get; private set; }
     public WorkerFlagTrigger FlagTrigger { get; private set; }
+    public bool IsFree { get; private set; }
 
     private void Awake()
     {
@@ -35,7 +34,6 @@ public class Worker : MonoBehaviour, ISpawnObject<Worker>
         _resursTrigger = GetComponent<WorkerResursTrigger>();
         FlagTrigger = GetComponent<WorkerFlagTrigger>();
         _ignoreLayerUnit = ~_ignoreLayerUnit;
-        IsFree = true;
 
         _resursTrigger.OnResourceTrigger += View.TakeObject;
         View.OnTakeResurs += BackToBase;
@@ -51,10 +49,9 @@ public class Worker : MonoBehaviour, ISpawnObject<Worker>
 
     }
 
-    public void Init(Base baseOwn, Store store, bool isFree)
+    public void Init(Base baseOwn, bool isFree)
     {
         BaseOwn = baseOwn;
-        _store = store;
         IsFree = isFree;
     }
 
@@ -68,7 +65,6 @@ public class Worker : MonoBehaviour, ISpawnObject<Worker>
 
     public void UploadObject()
     {
-        _store.Append(View.ObjectTake);
         View.UploadObject();
         _stateMachinWorker.SelectState(WorkerStateType.Wait);
     }
@@ -89,6 +85,11 @@ public class Worker : MonoBehaviour, ISpawnObject<Worker>
     public void BuildBase(Flag flag, Worker worker)
     {
         _stateMachinWorker.SelectState(WorkerStateType.Wait);
+    }
+
+    public void SetBase(Base baseUnit)
+    {
+        BaseOwn = baseUnit;
     }
 
     public void SetIsFree(bool isFree)
